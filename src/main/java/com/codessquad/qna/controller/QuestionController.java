@@ -3,7 +3,6 @@ package com.codessquad.qna.controller;
 import com.codessquad.qna.domain.answer.Answer;
 import com.codessquad.qna.domain.question.Question;
 import com.codessquad.qna.domain.user.User;
-import com.codessquad.qna.exception.NotAuthorizationException;
 import com.codessquad.qna.service.AnswerService;
 import com.codessquad.qna.service.QuestionService;
 import com.codessquad.qna.utils.HttpSessionUtils;
@@ -28,9 +27,7 @@ public class QuestionController {
 
     @GetMapping("/form")
     public String getQuestionForm(HttpSession session) {
-        if (!HttpSessionUtils.isLoginUser(session)) {
-            return "redirect:/users/login";
-        }
+        HttpSessionUtils.isLoginUser(session);
         return "/qna/form";
     }
 
@@ -55,14 +52,9 @@ public class QuestionController {
 
     @GetMapping("/{id}/form")
     public String getUpdateForm(@PathVariable Long id, HttpSession session, Model model) {
-        if (!HttpSessionUtils.isLoginUser(session)) {
-            return "redirect:/users/login";
-        }
         Question question = questionService.findById(id);
         User sessionedUser = HttpSessionUtils.getUserFromSession(session);
-        if (!question.isWrittenBy(sessionedUser)) {
-            throw new NotAuthorizationException("자신의 글만 수정할 수 있습니다.");
-        }
+        question.isWrittenBy(sessionedUser);
         model.addAttribute("question", question);
         return "/qna/update_form";
     }
@@ -75,14 +67,9 @@ public class QuestionController {
 
     @DeleteMapping("/{id}")
     public String deleteQuestion(@PathVariable Long id, HttpSession session) {
-        if (!HttpSessionUtils.isLoginUser(session)) {
-            return "redirect:/users/login";
-        }
         Question question = questionService.findById(id);
         User sessionedUser = HttpSessionUtils.getUserFromSession(session);
-        if (!question.isWrittenBy(sessionedUser)) {
-            throw new NotAuthorizationException("자신의 글만 삭제할 수 있습니다.");
-        }
+        question.isWrittenBy(sessionedUser);
         questionService.deleteById(id);
         return "redirect:/";
     }

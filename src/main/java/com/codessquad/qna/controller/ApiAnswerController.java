@@ -21,9 +21,6 @@ public class ApiAnswerController {
 
     @PostMapping("/")
     public Answer createAnswer(@PathVariable Long questionId, Answer answer, HttpSession session) {
-        if (!HttpSessionUtils.isLoginUser(session)) {
-            return null;
-        }
         User sessionedUser = HttpSessionUtils.getUserFromSession(session);
         answer.setWriter(sessionedUser);
         return answerService.create(questionId, answer);
@@ -32,16 +29,9 @@ public class ApiAnswerController {
 
     @DeleteMapping("/{id}")
     public Answer delete(@PathVariable Long id, HttpSession session) {
-        if (!HttpSessionUtils.isLoginUser(session)) {
-            return null;
-        }
-
         Answer answer = answerService.findById(id);
         User loginUser = HttpSessionUtils.getUserFromSession(session);
-        if (!answer.isWrittenBy(loginUser)) {
-            throw new NotAuthorizationException("자신이 작성한 답변만 수정할 수 있습니다.");
-        }
-
+        answer.isWrittenBy(loginUser);
         answerService.deleteById(id);
         return answer;
     }

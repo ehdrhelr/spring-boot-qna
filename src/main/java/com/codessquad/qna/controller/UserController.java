@@ -1,7 +1,6 @@
 package com.codessquad.qna.controller;
 
 import com.codessquad.qna.domain.user.User;
-import com.codessquad.qna.exception.NotAuthorizationException;
 import com.codessquad.qna.service.UserService;
 import com.codessquad.qna.utils.HttpSessionUtils;
 import org.springframework.stereotype.Controller;
@@ -41,13 +40,8 @@ public class UserController {
 
     @GetMapping("/{id}/form")
     public String getUpdateForm(@PathVariable Long id, Model model, HttpSession session) {
-        if (!HttpSessionUtils.isLoginUser(session)) {
-            return "redirect:/users/login";
-        }
         User sessionedUser = HttpSessionUtils.getUserFromSession(session);
-        if (!sessionedUser.isYourId(id)) {
-            throw new NotAuthorizationException("자신의 정보만 수정할 수 있습니다.");
-        }
+        sessionedUser.isYourId(id);
         User user = userService.findById(id);
         model.addAttribute("user", user);
         return "/users/updateForm";

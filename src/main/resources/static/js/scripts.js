@@ -18,8 +18,8 @@ function addAnswer(e) {
         success: onSuccess
     });
 
-    function onError() {
-        alert("로그인이 필요합니다.");
+    function onError(data, status) {
+        // todo : 예외 처리
         $(".answer-write textarea").val("");
     }
 
@@ -53,8 +53,8 @@ function deleteAnswer(e) {
     });
 
     function onError() {
+        // todo : 예외 처리
         console.log("error");
-        alert("로그인이 필요합니다.");
     }
 
     function onSuccess(data, status) {
