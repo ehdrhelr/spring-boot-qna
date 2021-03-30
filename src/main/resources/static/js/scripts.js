@@ -18,9 +18,11 @@ function addAnswer(e) {
         success: onSuccess
     });
 
-    function onError(data, status) {
-        // todo : 예외 처리
+    function onError(xhr, status) {
         $(".answer-write textarea").val("");
+        if (xhr.status === 401) {
+            window.location.replace("/users/login");
+        }
     }
 
     function onSuccess(data, status) {
@@ -52,9 +54,11 @@ function deleteAnswer(e) {
         success: onSuccess
     });
 
-    function onError() {
-        // todo : 예외 처리
+    function onError(xhr, status) {
         console.log("error");
+        if (xhr.status === 401) {
+            window.location.replace("/users/login");
+        }
     }
 
     function onSuccess(data, status) {
